@@ -12,7 +12,6 @@ library("Rraven")
 library("devtools")
 library("knitr")
 library("magick")
-library("raster")
 ##https://en.m.wikipedia.org/wiki/Dinagat_Islands
 
 ## set temporary working directory
