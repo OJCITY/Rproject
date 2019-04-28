@@ -182,13 +182,13 @@ catalog(ad, nrow = 5, ncol = 4, mar = 0.01, flim = c(3.5, 10.5),
 open_wd() ## check wd, produces two catalogs
 ```
 
-##Read image catalog1 from Directory with magick function
+##Read image catalog1 from Directory
 ```{r,eval = TRUE, echo=FALSE}
 catalog1<- image_read("C:/Users/PC/Desktop/MB2_PRESENTATION/Catalog_p1.jpeg")
 print(catalog1)
 ```
 
-##Read image catalog2 from Directory with magick function
+##Read image catalog2 from Directory
 ```{r,eval = TRUE, echo=FALSE}
 catalog2<- image_read("C:/Users/PC/Desktop/MB2_PRESENTATION/Catalog_p2.jpeg")
 print(catalog2)
