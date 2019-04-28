@@ -1,0 +1,267 @@
+---
+title: "FREQUENCY RANGE DETECTION OF Eudynamys scolopaceus"
+author: "OJO SEGUN ADEWALE"
+date: "APRIL 4, 2019"
+output: 
+  ioslides_presentation: default
+  beamer_presentation: default
+---
+
+```{r setup, include=FALSE}
+library("warbleR")
+library("tuneR")
+library("Rraven")
+library("devtools")
+library("knitr")
+library("magick")
+setwd("C:/Users/PC/Desktop/MB2_PRESENTATION")
+getwd()
+```
+
+## An Overview
+
+ - Frequency Range Detection
+ 
+   + Acoustic Monitoring of (Eudynamys scolopaceus) sound
+   
+   + Getting the frequency range of acoustic signals from Spectrum
+   
+   + Filtering of the needed specie's sound from Xeno-canto using three distinct feature
+   
+   + Detection of downloaded sound in directory automatically and conversion to .wav files for easy analysis
+   
+   + Followed by Feature extraction and analysis.
+
+
+## Introduction
+ - Asian Koel  (Eudynamys scolopaceus)
+  + Mainly resident breeder in Tropical Southern Asia
+    
+  + They first arrived in Singapore in the 1980s 
+    
+  + A crafty avian parasite, shy bird, more heard than seen
+    
+  + They don't build nest but lays Egg in the nest of other birds (crow's nest)
+   
+  + They push eggs of the host to accommodate their own
+   
+  + 39- 46cm in Length, Eyes are bright red
+   
+  + Lives in light woodland , coastal mangrove's edges
+   
+  + Feeds on caterpillars and insect for protein
+    
+ 
+
+
+## Load needed Packages
+
+ + library("warbleR")
+ + library("tuneR")
+ + library("Rraven")
+ + library("devtools")
+ + library("knitr")
+ + library("magick")
+
+## Querying and checking out the Structure of all Recordings of Eudynamys species present.
+```{r,echo=TRUE}
+##Query  xeno-canto for all recordings of Eudynamys
+Asian<- querxc(qword="Eudynamys", download= FALSE)
+```
+
+
+##Check out the structure of resulting the data frame
+```{r,echo=TRUE}
+str(Asian)
+```
+
+##Query xeno-canto for all Eudynamys scolopaceus recordings
+```{r,echo=TRUE}
+Asian.koel<-querxc(qword="Eudynamys scolopaceus", download = FALSE)
+```
+
+##Check out the structure of resulting the data frame
+```{r,echo=TRUE}
+str(Asian.koel)
+```
+
+## Geographical distribution of the Asian Koel
+```{r,echo=TRUE}
+#search and query and get the numbers and how the species are spread accross
+X <- quer_xc("Eudynamys scolopaceus", download = FALSE) ##Eudynamys-scolopaceus
+```
+
+
+```{r,echo=TRUE}
+## Output of view X, displayed in the next window automatically
+View(X) # Including available sounds,location, Recordist e.t.c
+## write X into the Directory as csv
+write.csv(X, "C:/Users/PC/Desktop/MB2_PRESENTATION/X.csv")
+xcmaps(X)
+xcmaps(X, img = FALSE, it = "tiff") 
+# The generated Map can be found in The working Directory
+```
+
+## Read image xcmaps from Directory with magick function
+```{r,echo=TRUE}
+xcmaps<- image_read("C:/Users/PC/Desktop/MB2_PRESENTATION/Map of Eudynamys scolopaceus recordings.jpeg")
+print(xcmaps) ## Shows Geographical distribution of specie
+```
+
+## Existing levels of Signal for the Specie
+```{r,echo=TRUE}
+##Query to get the number of signal that exist in xeno-canto for Asian-koel
+levels(Asian.koel$Vocalization_type)
+```
+
+##Query to get the number of recordings per signal type
+```{r,echo=TRUE}
+##The output cannot be seen verywell because it's on the right hand side 
+##but can be seen in the console 
+table(Asian.koel$Vocalization_type)
+```
+
+## Query meta data to select the best signal using three filter; First by quality
+```{r,echo=TRUE}
+# Quality 
+Asian.koel<-Asian.koel[Asian.koel$Quality=="A",]
+nrow(Asian.koel)
+```
+
+
+## Filter secondly by Signal and thirdly by Location 
+```{r,echo=TRUE}
+##Second by signal type
+Asian.koel.call<-Asian.koel[grep("call", Asian.koel$Vocalization_type, ignore.case = TRUE), ]
+nrow(Asian.koel.call)
+
+###Third by locality
+Asian.koel.LS<-Asian.koel.call[grep("Dinigat Island",Asian.koel.call$Locality, ignore.case = FALSE),]
+```
+
+## Check the Structure of resulting data frame
+```{r,echo=TRUE}
+str(Asian.koel.LS)
+```
+
+## Download the recording
+```{r,echo=TRUE}
+querxc(X=Asian.koel.LS)
+```
+
+
+## Read file and convert to .wav file
+```{r,echo=TRUE}
+# Query and download  Xeno-Canto for metadata using genus and species as keywords 
+##asian.koel <- quer_xc(qword = "nr:446387", download = TRUE, pb = FALSE)
+r <- readMP3("Eudynamys-scolopaceus-446387.mp3")  ## MP3 file in working directory
+writeWave(r,"tmp.wav",extensible=FALSE)
+
+# Simultaneously lower sampling rate to speed up down stream analyses
+mp32wav(samp.rate = 22.05, pb = FALSE)
+
+
+ad <- auto_detec(wl = 200, threshold = 3.5, ssmooth = 1200, bp = c(4, 9.6), 
+                 pb = FALSE,  mindur = 0.1, maxdur = 0.25, img = FALSE)
+```
+
+
+```{r,echo=TRUE}
+snr <- sig2noise(ad, pb = FALSE, mar = 0.05)
+
+ad <- snr[rank(-snr$SNR) < 60, ]
+# A look at the subset of signals to be analyzed
+catalog(ad, nrow = 5, ncol = 4, mar = 0.01, flim = c(3.5, 10.5), 
+        labels = "selec", pal = reverse.heat.colors, pb = FALSE)
+open_wd() ## check wd, produces two catalogs
+```
+
+##Read image catalog1 from Directory with magick function
+```{r,echo=FALSE}
+catalog1<- image_read("C:/Users/PC/Desktop/MB2_PRESENTATION/Catalog_p1.jpeg")
+print(catalog1)
+```
+
+##Read image catalog2 from Directory with magick function
+```{r,eval = TRUE, echo=FALSE}
+catalog2<- image_read("C:/Users/PC/Desktop/MB2_PRESENTATION/Catalog_p2.jpeg")
+print(catalog2)
+```
+
+## Freq Range detect.for selection 2 only
+```{r,echo=TRUE}
+w2 <- readWave(as.character(ad$sound.files[2]), from = ad$start[2], 
+               to = ad$end[2], units = "seconds")
+freq_range_detec(w2, bp = c(2, 9.6), fsmooth = 1, ovlp = 95, 
+                 wl = 200, threshold = 8)## Pre-selection
+```
+
+## Freq Range detection for all selection
+```{r,echo=TRUE}
+for(i in 1:nrow(ad))
+{
+  wv <- readWave(as.character(ad$sound.files[i]), from = ad$start[i], 
+                 to = ad$end[i], units = "seconds")
+  freq_range_detec(wv, bp = c(2, 12), fsmooth = 1, ovlp = 95, wl = 200, 
+                   threshold = 8, flim = c(0, 13), 
+                   main = paste("selection", i))
+  Sys.sleep(0.8)
+} # All 39 .wavfiles check (WD)- this folder (Eudynamys-scolopaceus_ojo_files)
+```
+
+## Calculate for all selection using freq_range
+```{r,echo=TRUE}
+## Output displayed in the next window automatically.
+fr_ad <- freq_range(X = ad, bp = c(2, 12), fsmooth = 0.001, ovlp = 95, 
+                    wl = 200, threshold = 10, img = FALSE)
+View(fr_ad) # Contains start, end, SNR,Top&Bottom Freq.
+## write (fr_ad) into the Directory as csv
+write.csv(fr_ad, "C:/Users/PC/Desktop/MB2_PRESENTATION/fr_ad.csv")
+```
+
+## Dropping of NAs based on the Threshold
+```{r,echo=TRUE}
+# Check rows that have NAs
+row.has.na <- apply(fr_ad, 1, function(x){any(is.na(x))})
+
+# summation of number of rows with NA values
+sum(row.has.na)
+
+# Dropping of rows with NA values
+fr_ad.filtered <- fr_ad[!row.has.na,]
+```
+
+## Measuring of over 22 Acoustic Parameters in the sound files
+```{r,echo=TRUE}
+#using the range as Band pass filter
+sp <- specan(X = fr_ad.filtered, wl = 200, bp = "frange", ovlp = 90, pb = FALSE, 
+             threshold = 15)
+View(sp)## Output displayed in the next window automatically
+##write (sp) into the Directory as csv
+write.csv(sp, "C:/Users/PC/Desktop/MB2_PRESENTATION/sp.csv")
+```
+## Conclusion
+ + According to the IBA, Asian koel is one of the LCB in terms threat
+ + Dinagat Island is one of the 117key conservation site in Philippines
+ + The SNR divides the Mean Amplitude of the Signal by the Mean Amplitude of background noise adjacent to the signal
+ + Detection of these variouse Signals across the subset(catalog 1&2) is quite helpful and parameter adjustment can     as well improve the detection
+ + Freq_range helps to get the needed range for each of the 39 files however rows with NAs were dropped
+ + Using the Freq_range as a band filter generates over 22 acoustic parameters for the remaining 35 .wav files
+
+
+## For further analysis and information about the Specie and package used   
+https://www.researchgate.net/profile/Jose_Don_De_Alban/publication
+/281290212_Mts_Kambinliw_Redondo_Loreto_Dinagat_Island_Surigao_del
+_Norte_Integrating_Forest_Conservation_with_Local_Governance_Technical
+_Report/links/55e035d208aecb1a7cc22a83.pdf
+
+https://pdfs.semanticscholar.org/87d6/39403cf946281f55e425f77298fc1aed163a.pdf
+
+FREQUENCY_ANALYSIS_OF_SOUNDS_OF_ANIMALS%20(1).pdf
+
+https://cran.r-project.org/web/packages/warbleR/vignettes/warbleR_workflow
+_01.html#next_vignette:_visual_inspection_and_signal_classification
+
+https://cran.r-project.org/web/packages/magic/index.html
+
+Thank you all for  your time
