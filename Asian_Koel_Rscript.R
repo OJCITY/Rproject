@@ -31,6 +31,10 @@ Asian.koel<-querxc(qword="Eudynamys scolopaceus", download = FALSE)
 ##Check out the structure of resulting the data frame
 str(Asian.koel)
 
+##Read Asian Koel image from Directory with magick function
+A.koel<- image_read("C:/Users/PC/Desktop/MB2_PRESENTATION/asian koel.jpg")
+print(A.koel)
+
 #search and query and get the numbers and how the species are spread accross
 X <- quer_xc("Eudynamys scolopaceus", download = FALSE) ##Eudynamys-scolopaceus
 View(X)
