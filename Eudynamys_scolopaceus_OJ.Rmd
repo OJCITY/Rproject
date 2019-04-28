@@ -85,6 +85,12 @@ Asian.koel<-querxc(qword="Eudynamys scolopaceus", download = FALSE)
 str(Asian.koel)
 ```
 
+##Eudynamys scolopaceus
+```{r,echo=TRUE}
+A.koel<- image_read("C:/Users/PC/Desktop/MB2_PRESENTATION/asian koel.jpg")
+print(A.koel)
+```
+
 ## Geographical distribution of the Asian Koel
 ```{r,echo=TRUE}
 #search and query and get the numbers and how the species are spread accross
