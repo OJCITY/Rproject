@@ -1,4 +1,10 @@
-#frequency range detection of Animal sound
+##title: "FREQUENCY RANGE DETECTION OF Eudynamys scolopaceus"
+##author: "OJO SEGUN ADEWALE"
+##date: "APRIL 4, 2019"
+## Study Area: Dinagat Island- Philipines
+## Species: Eudynamys scolopaceus
+## English Name of Specie: Asian Koel.
+
 ##Eudynamys scolopaceus
 install.packages("warbleR")    ##githubinstall("warbleR", ask = FALSE)
 install.packages("tuneR")
