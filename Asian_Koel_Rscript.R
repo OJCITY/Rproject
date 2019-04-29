@@ -67,7 +67,7 @@ Asian.koel.LS<-Asian.koel.call[grep("Dinigat Island",Asian.koel.call$Locality, i
 ##Check resulting data frame
 str(Asian.koel.LS)
 
-###come back and use call to filter not by song
+###Query and download
 
 querxc(X=Asian.koel.LS)
 
